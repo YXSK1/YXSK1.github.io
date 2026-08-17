@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📖 部署指南 - 烧烤店点餐系统</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .deploy-container { max-width: 680px; margin: 0 auto; padding: 20px; }
+  .deploy-step { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .deploy-step h3 { font-size: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .deploy-step p, .deploy-step li { font-size: 13px; color: #555; line-height: 2; }
+  .deploy-step ol, .deploy-step ul { padding-left: 20px; }
+  .deploy-step code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #d63384; }
+  .deploy-step a { color: var(--primary); text-decoration: underline; }
+  .highlight { background: #FFF8F0; border: 2px solid var(--primary); border-radius: 10px; padding: 16px; margin: 16px 0; }
+  .highlight .hl-title { font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+  .highlight p { font-size: 13px; color: #8B4513; line-height: 1.8; }
+  .method-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .method-tab { flex: 1; padding: 12px; border-radius: 10px; text-align: center; font-size: 14px; font-weight: 600; border: 2px solid var(--border); background: #FAFAFA; cursor: pointer; }
+  .method-tab.active { border-color: var(--primary); background: #FFF3ED; color: var(--primary); }
+  .method-panel { display: none; }
+  .method-panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1>📖 部署指南</h1>
+    <div class="sub">3步上线 · 永久免费 · 零手续费</div>
+  </div>
+</div>
+
+<div class="deploy-container">
+
+  <div class="highlight">
+    <div class="hl-title">🎯 核心优势</div>
+    <p>
+      ✅ 完全免费，无任何平台抽成<br>
+      ✅ 顾客直接转账到你微信/支付宝，零手续费<br>
+      ✅ 数据存在自己浏览器，隐私安全<br>
+      ✅ 支持手机、平板、电脑多端使用<br>
+      ✅ 一次部署，永久使用
+    </p>
+  </div>
+
+  <div class="method-tabs">
+    <div class="method-tab active" onclick="switchMethod('github', this)">① GitHub Pages（推荐）</div>
+    <div class="method-tab" onclick="switchMethod('tencent', this)">② 腾讯云 COS</div>
+    <div class="method-tab" onclick="switchMethod('local', this)">③ 局域网直连</div>
+  </div>
+
+  <!-- GitHub Pages -->
+  <div class="method-panel active" id="method-github">
+    <div class="deploy-step">
+      <h3>📦 第一步：下载代码</h3>
+      <p>将整个文件夹下载到电脑，你会看到这些文件：</p>
+      <ul>
+        <li><code>index.html</code> - 顾客点餐页</li>
+        <li><code>admin.html</code> - 商家后台</li>
+        <li><code>qrcode.html</code> - 二维码生成器</li>
+        <li><code>styles.css</code> - 样式文件</li>
+        <li><code>data.js</code> - 数据层</li>
+        <li><code>app.js</code> - 顾客端逻辑</li>
+        <li><code>admin.js</code> - 后台逻辑</li>
+      </ul>
+    </div>
+
+    <div class="deploy-step">
+      <h3>🐙 第二步：上传到 GitHub</h3>
+      <ol>
+        <li>打开 <a href="https://github.com" target="_blank">github.com</a> 注册/登录</li>
+        <li>点击右上角 "+" → "New repository"</li>
+        <li>仓库名填 <code>bbq-order</code>，选 Public，点 Create</li>
+        <li>在仓库页面点 "uploading an existing file"</li>
+        <li>把整个文件夹的所有文件拖进去，点 "Commit changes"</li>
+      </ol>
+    </div>
+
+    <div class="deploy-step">
+      <h3>🌐 第三步：开启 GitHub Pages</h3>
+      <ol>
+        <li>进入仓库 → Settings → Pages</li>
+        <li>Source 选 "Deploy from a branch"</li>
+        <li>Branch 选 "main" → 点 Save</li>
+        <li>等待约1分钟，你会获得一个网址：<br><code>https://你的用户名.github.io/bbq-order/</code></li>
+        <li>打开 <code>qrcode.html</code>，填入上面的网址，生成二维码！</li>
+      </ol>
+    </div>
+
+    <div class="highlight">
+      <div class="hl-title">⚠️ 重要提醒</div>
+      <p>
+        GitHub Pages 是公开网址，任何人都能访问。<br>
+        但这套系统数据存在浏览器本地（LocalStorage），<br>
+        所以顾客和商家的数据是分开的，互不影响。<br>
+        <b>商家后台只需在你自己的电脑/平板上打开即可。</b>
+      </p>
+    </div>
+  </div>
+
+  <!-- 腾讯云 COS -->
+  <div class="method-panel" id="method-tencent">
+    <div class="deploy-step">
+      <h3>☁️ 腾讯云 COS 静态网站</h3>
+      <ol>
+        <li>打开 <a href="https://cloud.tencent.com/product/cos" target="_blank">cloud.tencent.com/product/cos</a> 注册登录</li>
+        <li>创建存储桶（Bucket），名称随意，地区选离你近的</li>
+        <li>将全部文件上传到存储桶根目录</li>
+        <li>开启"静态网站"功能，得到访问地址</li>
+        <li>腾讯云 COS 有免费额度，个人小店基本够用</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 局域网 -->
+  <div class="method-panel" id="method-local">
+    <div class="deploy-step">
+      <h3>🏠 局域网方案（最简单）</h3>
+      <p><b>适合：</b>小店只有几张桌子，不打算做外卖</p>
+      <ol>
+        <li>用一台电脑（笔记本/台式）放在店里，连上WiFi</li>
+        <li>双击打开 <code>index.html</code> 和 <code>admin.html</code></li>
+        <li>在同一WiFi下，手机浏览器访问电脑的IP地址</li>
+        <li>查看电脑IP：Windows按Win+R输入<code>cmd</code>，执行<code>ipconfig</code></li>
+        <li>手机访问 <code>http://192.168.x.x:端口</code> 即可点餐</li>
+      </ol>
+      <p style="margin-top:10px; color:#d63384"><b>缺点：</b>电脑关机后无法访问，仅适合简单场景</p>
+    </div>
+  </div>
+
+  <!-- 使用说明 -->
+  <div class="deploy-step">
+    <h3>🚀 上线后日常使用流程</h3>
+    <ol>
+      <li><b>开店时：</b>电脑/平板打开 admin.html → 确认店铺状态为"营业中"</li>
+      <li><b>顾客到店：</b>扫桌上的二维码 → 浏览菜单 → 加入购物车</li>
+      <li><b>选择堂食/外卖：</b>堂食填桌号，外卖填地址和电话</li>
+      <li><b>提交订单：</b>弹出收款码 → 顾客截图 → 微信/支付宝扫码转账</li>
+      <li><b>商家收到：</b>后台实时弹窗+声音提醒 → 确认接单 → 开始制作</li>
+      <li><b>完成后：</b>点击"完成订单" → 顾客可查看状态</li>
+    </ol>
+  </div>
+
+  <div class="deploy-step">
+    <h3>⚙️ 首次配置清单</h3>
+    <ol>
+      <li>打开 admin.html → 【💰 收款设置】→ 上传微信/支付宝收款码</li>
+      <li>【🍽️ 菜品管理】→ 修改菜品名称、价格，添加/删除菜品</li>
+      <li>【⚙️ 店铺设置】→ 修改店铺名称，确认营业状态</li>
+      <li>打开 qrcode.html → 生成专属二维码 → 打印张贴</li>
+      <li>测试：手机扫码 → 下单 → 确认后台能收到提醒</li>
+    </ol>
+  </div>
+
+  <div class="highlight">
+    <div class="hl-title">💡 进阶建议</div>
+    <p>
+      • 用iPad当商家后台，放收银台，随时查看订单<br>
+      • 收款码建议用微信/支付宝商家收款码（支持信用卡付款）<br>
+      • 定期在后台【清空订单】保持数据整洁<br>
+      • 如需数据跨设备同步，可后续接入云数据库（如腾讯云开发）
+    </p>
+  </div>
+
+</div>
+
+<script>
+function switchMethod(method, btn) {
+  document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.method-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('method-' + method).classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 烧烤店 · 商家后台</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .admin-nav { display: flex; gap: 4px; padding: 0 12px; background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 52px; z-index: 90; }
+  .admin-nav button { flex: 1; padding: 12px 6px; background: none; border: none; font-size: 14px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; }
+  .admin-nav button.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .dish-form { background: #FAFAFA; border-radius: 10px; padding: 14px; margin-bottom: 14px; border: 1px solid #eee; }
+  .dish-form .df-row { display: flex; gap: 10px; }
+  .dish-form .df-row > div { flex: 1; }
+  .dish-form label { font-size: 12px; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
+  .dish-form input, .dish-form select { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+  .dish-form button { margin-top: 10px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-cancel { background: #f0f0f0; color: #666; margin-left: 8px; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+  .toggle-row label { font-size: 14px; font-weight: 500; }
+  .switch { position: relative; width: 48px; height: 26px; background: #ccc; border-radius: 13px; cursor: pointer; transition: background .3s; }
+  .switch.on { background: var(--success); }
+  .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: transform .3s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .switch.on::after { transform: translateX(22px); }
+  .order-filter { display: flex; gap: 8px; margin-bottom: 12px; }
+  .order-filter button { padding: 6px 14px; border-radius: 6px; font-size: 12px; border: 1px solid #ddd; background: #fff; }
+  .order-filter button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+  .empty-state .es-icon { font-size: 48px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="top-bar">
+  <div>
+    <h1>🔥 商家后台</h1>
+    <div class="sub" id="adminSub">实时监控订单</div>
+  </div>
+  <button onclick="testNotify()" style="background:rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:6px 12px;font-size:12px">🔔 测试提醒</button>
+</div>
+
+<!-- 导航 -->
+<div class="admin-nav">
+  <button class="active" onclick="switchTab('orders', this)">📋 订单管理</button>
+  <button onclick="switchTab('dishes', this)">🍽️ 菜品管理</button>
+  <button onclick="switchTab('payment', this)">💰 收款设置</button>
+  <button onclick="switchTab('settings', this)">⚙️ 店铺设置</button>
+</div>
+
+<div class="admin-body">
+
+  <!-- ========== 订单管理 ========== -->
+  <div class="tab-panel active" id="tab-orders">
+    <div class="order-filter">
+      <button class="active" onclick="filterOrders('all', this)">全部</button>
+      <button onclick="filterOrders('new', this)">🆕 新订单</button>
+      <button onclick="filterOrders('confirmed', this)">👨‍🍳 制作中</button>
+      <button onclick="filterOrders('completed', this)">✅ 已完成</button>
+    </div>
+    <div id="ordersList"></div>
+  </div>
+
+  <!-- ========== 菜品管理 ========== -->
+  <div class="tab-panel" id="tab-dishes">
+    <div class="dish-form" id="dishForm">
+      <div class="df-row">
+        <div>
+          <label>菜品名称</label>
+          <input type="text" id="dfName" placeholder="如：烤羊肉串">
+        </div>
+        <div>
+          <label>价格 (元)</label>
+          <input type="number" id="dfPrice" placeholder="0" min="0" step="0.5">
+        </div>
+      </div>
+      <div class="df-row" style="margin-top:8px">
+        <div>
+          <label>分类</label>
+          <select id="dfCat">
+            <option value="bbq">🔥 烧烤类</option>
+            <option value="snack">🍟 小吃类</option>
+            <option value="drink">🥤 酒水类</option>
+          </select>
+        </div>
+        <div>
+          <label>图标 (Emoji)</label>
+          <input type="text" id="dfIcon" placeholder="🍢" value="🍢">
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label>描述</label>
+        <input type="text" id="dfDesc" placeholder="如：新疆风味·鲜嫩多汁">
+      </div>
+      <div style="margin-top:10px">
+        <button class="btn-primary" onclick="saveDishForm()">💾 保存菜品</button>
+        <button class="btn-cancel" onclick="resetDishForm()">取消</button>
+      </div>
+    </div>
+    <div id="dishList"></div>
+  </div>
+
+  <!-- ========== 收款设置 ========== -->
+  <div class="tab-panel" id="tab-payment">
+    <div class="admin-section">
+      <h3>💚 微信收款码</h3>
+      <div class="qr-upload-area" onclick="uploadPayCode('wechat')">
+        <div class="upload-icon" id="wechatIcon">📷</div>
+        <div class="upload-text" id="wechatText">点击上传微信收款码</div>
+      </div>
+      <input type="file" id="wechatFile" accept="image/*" style="display:none" onchange="handlePayCodeUpload('wechat', this)">
+    </div>
+    <div class="admin-section">
+      <h3>🔵 支付宝收款码</h3>
+      <div class="qr-upload-area" onclick="uploadPayCode('alipay')">
+        <div class="upload-icon" id="alipayIcon">📷</div>
+        <div class="upload-text" id="alipayText">点击上传支付宝收款码</div>
+      </div>
+      <input type="file" id="alipayFile" accept="image/*" style="display:none" onchange="handlePayCodeUpload('alipay', this)">
+    </div>
+    <div style="background:#FFF8F0;border:1px solid #FFE0CC;border-radius:10px;padding:14px;font-size:13px;line-height:1.8;color:#8B4513">
+      <b>💡 收款码获取方式：</b><br>
+      1. 打开微信 → 我 → 服务 → 收付款 → 二维码收款 → 保存图片<br>
+      2. 打开支付宝 → 收付款 → 我要收款 → 保存图片<br>
+      3. 将保存的二维码图片上传到上方对应位置
+    </div>
+  </div>
+
+  <!-- ========== 店铺设置 ========== -->
+  <div class="tab-panel" id="tab-settings">
+    <div class="admin-section">
+      <h3>🏪 基本信息</h3>
+      <div class="form-group">
+        <label>店铺名称</label>
+        <input type="text" id="setName" placeholder="如：老王烧烤店">
+      </div>
+      <div class="toggle-row">
+        <label>营业状态</label>
+        <div class="switch" id="setOpen" onclick="toggleOpen(this)"></div>
+      </div>
+      <button class="btn-primary" onclick="saveSettingsForm()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600">💾 保存设置</button>
+    </div>
+
+    <div class="admin-section">
+      <h3>📊 数据统计</h3>
+      <div class="stat-cards" id="statCards"></div>
+    </div>
+
+    <div class="admin-section">
+      <h3>⚠️ 危险操作</h3>
+      <button onclick="clearAllOrders()" style="padding:10px 16px;background:#FCE8E8;color:var(--danger);border-radius:8px;font-size:13px;font-weight:600">🗑️ 清空所有订单</button>
+      <button onclick="resetAllData()" style="padding:10px 16px;background:#FCE8E8;color:var(--danger);border-radius:8px;font-size:13px;font-weight:600;margin-left:8px">🔄 恢复默认菜品</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 通知弹窗 -->
+<div class="notify-popup" id="notifyPopup">
+  <div class="np-title">🔔 新订单来了！</div>
+  <div class="np-body" id="notifyBody"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

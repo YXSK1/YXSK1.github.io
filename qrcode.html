@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 生成专属点餐二维码</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .qr-container { max-width: 500px; margin: 0 auto; padding: 20px; }
+  .qr-step { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .qr-step h3 { font-size: 15px; margin-bottom: 10px; }
+  .qr-step p { font-size: 13px; color: #666; line-height: 1.8; }
+  .qr-step code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  .qr-result { text-align: center; padding: 20px; }
+  .qr-result canvas { border: 8px solid #fff; border-radius: 12px; box-shadow: var(--shadow); }
+  .qr-actions { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+  .qr-actions button { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-outline { background: #fff; color: var(--primary); border: 2px solid var(--primary); }
+  .qr-tips { background: #FFF8F0; border: 1px solid #FFE0CC; border-radius: 10px; padding: 14px; font-size: 13px; line-height: 2; }
+  .qr-tips b { color: var(--primary); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1>🔥 二维码生成</h1>
+    <div class="sub">生成专属点餐二维码 · 打印张贴即可</div>
+  </div>
+</div>
+
+<div class="qr-container">
+
+  <!-- 步骤说明 -->
+  <div class="qr-step">
+    <h3>📋 使用步骤</h3>
+    <p>
+      1. 点击下方"生成二维码"按钮<br>
+      2. 将二维码图片保存到手机/电脑<br>
+      3. 打印出来贴在桌子上 / 门口 / 外卖包装上<br>
+      4. 顾客扫码即可进入点餐页面
+    </p>
+  </div>
+
+  <!-- 输入区域 -->
+  <div class="qr-step">
+    <h3>🔗 点餐页面地址</h3>
+    <p style="margin-bottom:10px">请输入你的点餐页面完整网址（部署后填写）：</p>
+    <input type="text" id="qrUrl" placeholder="如：https://你的店铺.github.io/烧烤点餐/index.html" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px">
+    <div style="margin-top:10px; display:flex; gap:8px">
+      <button class="btn-primary" onclick="genQR()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;flex:1">📱 生成二维码</button>
+      <button class="btn-outline" onclick="useCurrentPage()" style="padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600">📄 使用当前页面</button>
+    </div>
+  </div>
+
+  <!-- 二维码展示 -->
+  <div class="qr-step" id="qrResult" style="display:none">
+    <h3>✅ 你的专属点餐二维码</h3>
+    <div class="qr-result">
+      <canvas id="qrCanvas"></canvas>
+      <div style="margin-top:10px;font-size:13px;color:#666" id="qrUrlDisplay"></div>
+    </div>
+    <div class="qr-actions">
+      <button class="btn-primary" onclick="downloadQR()">⬇️ 下载二维码</button>
+      <button class="btn-outline" onclick="printQR()">🖨️ 打印二维码</button>
+    </div>
+  </div>
+
+  <!-- 提示 -->
+  <div class="qr-tips">
+    <b>💡 部署提示：</b><br>
+    1. 将整个文件夹上传到 <b>GitHub Pages</b>（免费）或 <b>腾讯云 COS</b>（有免费额度）<br>
+    2. 获取你的网页地址，填入上方输入框<br>
+    3. 生成二维码后打印，每个桌子贴一张<br>
+    4. 顾客扫码 → 点餐 → 转账付款 → 你在后台收到订单
+  </div>
+
+  <!-- 快速测试 -->
+  <div class="qr-step" style="margin-top:16px; text-align:center">
+    <h3>🧪 快速测试</h3>
+    <p>点击下方按钮直接打开点餐页面测试效果：</p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:10px">
+      <a href="index.html" target="_blank" style="padding:10px 20px;background:var(--primary);color:#fff;border-radius:8px;font-size:14px;font-weight:600">🍽️ 打开顾客点餐页</a>
+      <a href="admin.html" target="_blank" style="padding:10px 20px;background:#333;color:#fff;border-radius:8px;font-size:14px;font-weight:600">⚙️ 打开商家后台</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function useCurrentPage() {
+  const url = window.location.href.replace('qrcode.html', 'index.html');
+  document.getElementById('qrUrl').value = url;
+}
+
+function genQR() {
+  let url = document.getElementById('qrUrl').value.trim();
+  if (!url) {
+    // 自动使用当前目录的 index.html
+    url = window.location.href.replace('qrcode.html', 'index.html');
+    document.getElementById('qrUrl').value = url;
+  }
+
+  QRCode.toCanvas(document.getElementById('qrCanvas'), url, {
+    width: 280,
+    margin: 2,
+    color: { dark: '#FF6B35', light: '#FFFFFF' }
+  }, function(err) {
+    if (err) {
+      alert('生成失败：' + err.message);
+      return;
+    }
+    document.getElementById('qrResult').style.display = 'block';
+    document.getElementById('qrUrlDisplay').textContent = url;
+    document.getElementById('qrResult').scrollIntoView({ behavior: 'smooth' });
+  });
+}
+
+function downloadQR() {
+  const canvas = document.getElementById('qrCanvas');
+  const link = document.createElement('a');
+  link.download = '烧烤店点餐二维码.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+function printQR() {
+  const canvas = document.getElementById('qrCanvas');
+  const url = document.getElementById('qrUrl').value;
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>打印二维码</title></head>
+    <body style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif">
+      <h2 style="color:#FF6B35;margin-bottom:20px">🔥 扫码点餐</h2>
+      <img src="${canvas.toDataURL()}" style="width:300px;height:300px;border:10px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.1)">
+      <p style="margin-top:16px;color:#666;font-size:14px">微信/支付宝扫一扫即可点餐</p>
+      <p style="color:#999;font-size:12px;margin-top:8px">${url}</p>
+    </body></html>
+  `);
+  win.document.close();
+  setTimeout(() => win.print(), 500);
+}
+
+// 页面加载时自动填入当前路径
+window.addEventListener('DOMContentLoaded', () => {
+  const url = window.location.href.replace('qrcode.html', 'index.html');
+  document.getElementById('qrUrl').value = url;
+});
+</script>
+</body>
+</html>

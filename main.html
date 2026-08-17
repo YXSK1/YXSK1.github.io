@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 烧烤店点餐系统</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .main-container { max-width: 500px; margin: 0 auto; padding: 30px 20px; }
+  .hero { text-align: center; margin-bottom: 30px; }
+  .hero .logo { font-size: 64px; margin-bottom: 12px; }
+  .hero h1 { font-size: 24px; margin-bottom: 8px; }
+  .hero p { font-size: 14px; color: #888; line-height: 1.8; }
+  .entry-card { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+  .entry-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,.12); }
+  .entry-card .ec-icon { font-size: 36px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; }
+  .entry-card .ec-info { flex: 1; }
+  .entry-card .ec-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .entry-card .ec-desc { font-size: 12px; color: #888; }
+  .entry-card .ec-arrow { font-size: 20px; color: #ccc; }
+  .bg-orange { background: #FFF3ED; }
+  .bg-blue { background: #E8F0FE; }
+  .bg-green { background: #E8F5E9; }
+  .bg-purple { background: #F3E5F5; }
+  .features { margin-top: 24px; padding: 16px; background: #FFF8F0; border-radius: 10px; border: 1px solid #FFE0CC; }
+  .features h3 { font-size: 14px; margin-bottom: 8px; color: var(--primary); }
+  .features ul { font-size: 12px; color: #8B4513; line-height: 2.2; padding-left: 16px; }
+</style>
+</head>
+<body>
+
+<div class="main-container">
+  <div class="hero">
+    <div class="logo">🔥</div>
+    <h1>烧烤店点餐系统</h1>
+    <p>零手续费 · 永久免费 · 扫码即点<br>线下转账 · 无平台抽成</p>
+  </div>
+
+  <a href="index.html" class="entry-card">
+    <div class="ec-icon bg-orange">🍽️</div>
+    <div class="ec-info">
+      <div class="ec-title">顾客点餐页</div>
+      <div class="ec-desc">扫码进入 · 浏览菜单 · 下单付款</div>
+    </div>
+    <div class="ec-arrow">→</div>
+  </a>
+
+  <a href="admin.html" class="entry-card">
+    <div class="ec-icon bg-blue">⚙️</div>
+    <div class="ec-info">
+      <div class="ec-title">商家后台</div>
+      <div class="ec-desc">订单管理 · 菜品管理 · 收款设置</div>
+    </div>
+    <div class="ec-arrow">→</div>
+  </a>
+
+  <a href="qrcode.html" class="entry-card">
+    <div class="ec-icon bg-green">📱</div>
+    <div class="ec-info">
+      <div class="ec-title">生成点餐二维码</div>
+      <div class="ec-desc">输入网址 · 一键生成 · 打印张贴</div>
+    </div>
+    <div class="ec-arrow">→</div>
+  </a>
+
+  <a href="deploy.html" class="entry-card">
+    <div class="ec-icon bg-purple">📖</div>
+    <div class="ec-info">
+      <div class="ec-title">部署指南</div>
+      <div class="ec-desc">手把手教程 · 3步上线 · 永久免费</div>
+    </div>
+    <div class="ec-arrow">→</div>
+  </a>
+
+  <div class="features">
+    <h3>✨ 系统特色</h3>
+    <ul>
+      <li>🆓 完全免费，无任何平台抽成和手续费</li>
+      <li>📱 顾客扫码点餐，支持堂食 + 外卖</li>
+      <li>🔔 新订单实时弹窗 + 声音提醒</li>
+      <li>💰 微信/支付宝收款码转账，钱直接到你的账户</li>
+      <li>📝 菜品随意增删改，价格随时调</li>
+      <li>🖨️ 一键生成专属二维码，打印张贴即可</li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>

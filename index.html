@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🔥 烧烤店点餐</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="top-bar">
+  <div>
+    <h1 id="shopName">🔥 烧烤店</h1>
+    <div class="sub" id="shopStatus">营业中 · 欢迎光临</div>
+  </div>
+  <div style="font-size:22px">🍢</div>
+</div>
+
+<!-- 分类标签 -->
+<div class="cat-tabs" id="catTabs"></div>
+
+<!-- 菜品列表 -->
+<div class="menu-list" id="menuList"></div>
+
+<!-- 购物车底部栏 -->
+<div class="cart-bar" id="cartBar" style="display:none">
+  <div class="cart-icon" onclick="openCart()">
+    🛒<span class="badge" id="cartBadge">0</span>
+  </div>
+  <div class="total">
+    <div class="label">合计</div>
+    <div class="amount" id="cartTotal">¥0</div>
+  </div>
+  <button class="checkout-btn" onclick="openCart()">去结算</button>
+</div>
+
+<!-- 购物车弹窗 -->
+<div class="modal-overlay" id="cartModal">
+  <div class="modal" style="position:relative">
+    <button class="close-btn" onclick="closeModal('cartModal')">✕</button>
+    <div class="modal-title">🛒 我的购物车</div>
+    <div id="cartItems"></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:2px solid #eee">
+      <span style="font-size:15px;font-weight:600">总计</span>
+      <span style="font-size:22px;font-weight:800;color:var(--primary)" id="cartModalTotal">¥0</span>
+    </div>
+    <button style="width:100%; margin-top:14px; padding:14px; background:var(--primary); color:#fff; border-radius:10px; font-size:16px; font-weight:700" onclick="goCheckout()">去下单 →</button>
+  </div>
+</div>
+
+<!-- 下单弹窗 -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal" style="position:relative">
+    <button class="close-btn" onclick="closeModal('checkoutModal')">✕</button>
+    <div class="modal-title">📝 填写订单</div>
+
+    <!-- 订单类型 -->
+    <div class="order-type-bar">
+      <div class="ot-btn active" id="otDine" onclick="setOrderType('dine')">🍽️ 堂食</div>
+      <div class="ot-btn" id="otTake" onclick="setOrderType('takeout')">🛵 外卖</div>
+    </div>
+
+    <!-- 桌号/地址 -->
+    <div class="form-group" id="fgTable">
+      <label>🪑 桌号</label>
+      <input type="text" id="inpTable" placeholder="请输入桌号（如：3号桌）">
+    </div>
+    <div class="form-group" id="fgAddress" style="display:none">
+      <label>📍 外卖地址</label>
+      <textarea id="inpAddress" placeholder="请输入详细收货地址"></textarea>
+    </div>
+
+    <!-- 电话 -->
+    <div class="form-group">
+      <label>📱 联系电话</label>
+      <input type="tel" id="inpPhone" placeholder="请输入手机号">
+    </div>
+
+    <!-- 备注 -->
+    <div class="form-group">
+      <label>💬 订单备注（可选）</label>
+      <textarea id="inpOrderRemark" placeholder="如：少辣、多孜然、不要葱..."></textarea>
+    </div>
+
+    <!-- 订单摘要 -->
+    <div style="background:#FAFAFA; border-radius:10px; padding:12px; margin-bottom:14px">
+      <div style="font-size:13px; color:#666; margin-bottom:6px; font-weight:600">订单明细</div>
+      <div id="checkoutItems" style="font-size:13px; line-height:1.8"></div>
+      <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px solid #eee">
+        <span style="font-weight:600">合计</span>
+        <span style="font-size:18px; font-weight:800; color:var(--primary)" id="checkoutTotal">¥0</span>
+      </div>
+    </div>
+
+    <button style="width:100%; padding:14px; background:var(--primary); color:#fff; border-radius:10px; font-size:16px; font-weight:700" onclick="submitOrder()">✅ 提交订单</button>
+  </div>
+</div>
+
+<!-- 付款弹窗 -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal" style="position:relative">
+    <button class="close-btn" onclick="closeModal('payModal')">✕</button>
+    <div class="modal-title">💰 线下转账付款</div>
+
+    <div class="pay-step">
+      <div style="font-weight:700; margin-bottom:6px; font-size:14px">📋 付款步骤</div>
+      <ol>
+        <li>截图保存下方收款码</li>
+        <li>打开微信/支付宝扫一扫</li>
+        <li>从相册选择收款码完成转账</li>
+        <li>转账金额：<b id="payAmount" style="color:var(--primary)">¥0</b></li>
+        <li>转账备注填写订单号：<b id="payOrderNo" style="color:var(--primary)"></b></li>
+      </ol>
+    </div>
+
+    <div class="pay-codes" id="payCodes"></div>
+
+    <div style="text-align:center; margin-top:16px; padding:10px; background:#E8F5E9; border-radius:8px">
+      <div style="font-size:13px; color:#2E7D32; font-weight:600">✅ 付款后请等待商家确认</div>
+      <div style="font-size:12px; color:#555; margin-top:4px">商家确认后将开始制作，预计15-20分钟</div>
+    </div>
+
+    <button style="width:100%; margin-top:14px; padding:14px; background:var(--success); color:#fff; border-radius:10px; font-size:16px; font-weight:700" onclick="finishOrder()">我已付款完成</button>
+  </div>
+</div>
+
+<!-- 成功页面 -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal" style="position:relative; text-align:center; padding:40px 20px">
+    <div class="success-page">
+      <div class="icon-big">🎉</div>
+      <h2>下单成功！</h2>
+      <div class="order-num" id="successOrderNo">BBQ0001</div>
+      <p id="successMsg">商家已收到您的订单<br>正在火速准备中...</p>
+      <button style="margin-top:20px; padding:12px 30px; background:var(--primary); color:#fff; border-radius:10px; font-size:15px; font-weight:600" onclick="closeAllModals()">知道了</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
